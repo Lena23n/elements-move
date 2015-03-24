@@ -14,13 +14,14 @@ function Game(id) {
 			x: 10,
 			y: 10,
 			r : 10,
-			speed : 4,
+			speed : 2,
 			target : {
 				x : 0,
 				y : 0
 			},
 			mouseControl : 'left',
-			color: 'red'
+			color: 'red',
+			isMoving : null
 		},
 		{
 			x: 20,
@@ -32,10 +33,10 @@ function Game(id) {
 				y : 0
 			},
 			mouseControl : 'right',
-			color: 'blue'
+			color: 'blue',
+			isMoving : null
 		}
 	];
-
 	this.isAnimationActive = false;
 }
 
@@ -51,7 +52,6 @@ Game.prototype = {
 		this.offSetX = this.canvas.offsetLeft;
 		this.offSetY = this.canvas.offsetTop;
 
-
 		if (!this.canvas) {
 			return false
 		}
@@ -65,13 +65,10 @@ Game.prototype = {
 			self.eventClick(e);
 		});
 
-
-
 		this.startGame();
 	},
 
 	startGame: function () {
-
 		this.draw();
 	},
 
@@ -104,28 +101,36 @@ Game.prototype = {
 
 	eventClick : function (e) {
 		this.key = (e).which;
-		this.checkKeys();
 
 		this.defineCoords(e);
-	/*	this.move();*/
+		this.move(this.balloons);
 	},
 
 	defineCoords: function (e) {
 		var x = (e.clientX - this.offSetX),
 		 	y = (e.clientY - this.offSetY);
+
+		this.checkKeys(x, y);
 	},
 
-	checkKeys : function () {
+	checkKeys : function (x,y) {
 		var mouseButton = {
 			1: 'left',
 			3: 'right'
 			};
 
 			if (this.key in mouseButton) {
-				var d = mouseButton[this.key];
-
-				console.log(d)
+				var mouseClicked = mouseButton[this.key];
 			}
+
+		for (var i = 0; i < this.balloons.length; i++) {
+			if (this.balloons[i].mouseControl == mouseClicked) {
+				this.balloons[i].target.x = x;
+				this.balloons[i].target.y = y;
+				this.balloons[i].isMoving = true;
+				//this.move(this.balloons[i]);
+			}
+		}
 	},
 
 	move : function (obj) {
@@ -133,43 +138,50 @@ Game.prototype = {
 			now,
 			dTime,
 			startTime,
-			distance;
+			distance,
+			i;
 
 		startTime = Date.now();
+
 		if (this.isAnimationActive) {
 			return false
 		}
-
-		this.isAnimationActive = true;
 
 		var tick = function () {
 			now = Date.now();
 			dTime = now - startTime;
 
-			// todo movement through vectors
-			// todo movement through angle/cos/sin -> atan2
+			for (i = 0; i < self.balloons.length;  i++) {
+				if (self.balloons[i].isMoving) {
+					self.isAnimationActive = true;
+					var obj = self.balloons[i];
 
-			var diffX = obj.target.x - obj.x,
-				diffY = obj.target.y - obj.y;
+					// todo movement through vectors
+					// todo movement through angle/cos/sin -> atan2
 
-			distance = Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2));
+					var diffX = obj.target.x - obj.x,
+						diffY = obj.target.y - obj.y;
 
-			// todo use time difference between frames
-			var dx = (diffX / distance);
-			var dy = (diffY / distance);
+					distance = Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2));
 
-			// todo VECTORS
-			// todo normalization
+					// todo use time difference between frames
+					var dx = (diffX / distance);
+					var dy = (diffY / distance);
 
-			obj.x += dx * obj.speed;
-			obj.y += dy * obj.speed;
+					// todo VECTORS
+					// todo normalization
 
-			if (distance < 5 ) {
-				self.isAnimationActive = false;
+					obj.x += dx * obj.speed;
+					obj.y += dy * obj.speed;
+
+					console.log(obj.speed);
+
+					if (distance < 5 ) {
+						obj.isMoving = false;0
+					}
+					self.draw(obj.x, obj.y);
+				}
 			}
-
-			self.draw(obj.x, obj.y);
-
 			// Redraw
 			if(self.isAnimationActive) requestAnimationFrame(tick);
 		};
