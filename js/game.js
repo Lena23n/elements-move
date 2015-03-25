@@ -1,3 +1,7 @@
+function Balloon(x, y, r, speed) {
+
+}
+
 function Game(id) {
 	this.id = id;
 	this.canvas = null;
@@ -8,7 +12,7 @@ function Game(id) {
 	this.offSetY = null;
 	this.isAnimationActive = false;
 	this.key = null;
-
+	this.balloonsAmount = 2;
 	this.balloons = [
 		{
 			x: 10,
@@ -120,7 +124,8 @@ Game.prototype = {
 			};
 
 			if (this.key in mouseButton) {
-				var mouseClicked = mouseButton[this.key];
+				// todo DONT use var inside if
+				mouseClicked = mouseButton[this.key];
 			}
 
 		for (var i = 0; i < this.balloons.length; i++) {
@@ -147,6 +152,9 @@ Game.prototype = {
 		}
 
 		var tick = function () {
+			// todo implement cycle stopping
+			console.log('test');
+			self.isAnimationActive = false;
 			now = Date.now();
 			dTime = now - startTime;
 
@@ -172,8 +180,6 @@ Game.prototype = {
 
 					obj.x += dx * obj.speed;
 					obj.y += dy * obj.speed;
-
-					console.log(obj.speed);
 
 					if (distance < 5 ) {
 						obj.isMoving = false;
