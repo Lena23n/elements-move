@@ -14,14 +14,14 @@ function Game(id) {
 			x: 10,
 			y: 10,
 			r : 10,
-			speed : 2,
+			speed : 3,
 			target : {
 				x : 0,
 				y : 0
 			},
 			mouseControl : 'left',
 			color: 'red',
-			isMoving : null
+			isMoving : false
 		},
 		{
 			x: 20,
@@ -34,7 +34,7 @@ function Game(id) {
 			},
 			mouseControl : 'right',
 			color: 'blue',
-			isMoving : null
+			isMoving : false
 		}
 	];
 	this.isAnimationActive = false;
@@ -128,12 +128,11 @@ Game.prototype = {
 				this.balloons[i].target.x = x;
 				this.balloons[i].target.y = y;
 				this.balloons[i].isMoving = true;
-				//this.move(this.balloons[i]);
 			}
 		}
 	},
 
-	move : function (obj) {
+	move : function () {
 		var self = this,
 			now,
 			dTime,
@@ -177,7 +176,7 @@ Game.prototype = {
 					console.log(obj.speed);
 
 					if (distance < 5 ) {
-						obj.isMoving = false;0
+						obj.isMoving = false;
 					}
 					self.draw(obj.x, obj.y);
 				}
